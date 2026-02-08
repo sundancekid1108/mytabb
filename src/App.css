@@ -1,0 +1,11 @@
+@tailwind utilities;
+
+/* 전체 페이지 스크롤 및 바운스 방지 */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* 브라우저 자체 스크롤바 제거 */
+    overscroll-behavior: none; /* 맥/모바일에서 튕김 효과(Bounce) 방지 */
+}

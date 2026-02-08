@@ -1,2 +1,3 @@
-# mytabba
-chrome tab manage extension
+# MYTABB
+- 크롬 즐겨찾기 관리 확장프로그램
+- 
