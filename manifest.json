@@ -11,7 +11,8 @@
     "permissions": [
         "topSites",
         "bookmarks",
-        "storage"
+        "storage",
+        "tabs"
     ],
     "background": {
         "service_worker": "src/background.js",

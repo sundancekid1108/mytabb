@@ -14,9 +14,10 @@ const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
         return groups;
     }, [openTabs]);
 
+    console.log("tabsByWindow", tabsByWindow);
+
     // 윈도우 ID 목록 (키값) 가져오기
     const windowIds = Object.keys(tabsByWindow);
-    console.log("tabsByWindow", tabsByWindow);
 
     return (
         <aside className="w-80 bg-white border-l border-gray-200 flex flex-col flex-shrink-0 h-full">
@@ -49,13 +50,11 @@ const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
                                 className="group flex items-center p-3 mb-1 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors relative"
                             >
                                 {/* 파비콘 (주석 해제 시 사용 가능) */}
-                                {/* <img
-                                    src={tab.favIconUrl || `https://www.google.com/s2/favicons?domain=${new URL(tab.url).hostname}&sz=32`}
-                                    alt=""
-                                    className="w-4 h-4 mr-3 flex-shrink-0 rounded-sm"
-                                    onError={(e) => {e.target.style.display='none'}}
-                                />
-                                */}
+                         {/*     <img*/}
+                         {/*   src={tab.favIconUrl || `https://www.google.com/s2/favicons?domain=${new URL(tab.url).hostname}&sz=32`}*/}
+                         {/*alt=""*/}
+                         {/*       className="w-4 h-4 mr-3 flex-shrink-0 rounded-sm"*/}
+                         {/*   onError={(e) => {e.target.style.display='none'}}/>*/}
 
                                 {/* 탭 제목 */}
                                 <div className="flex-1 min-w-0 mr-6"> {/* 삭제 버튼 공간 확보를 위해 mr-6 */}

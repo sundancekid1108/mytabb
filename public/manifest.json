@@ -5,5 +5,31 @@
   "action": {
     "default_popup": "index.html"
   },
-  "permissions": []
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": [
+    "topSites",
+    "bookmarks",
+    "storage",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content.js"
+      ]
+    }
+  ]
+
+
+
+
 }

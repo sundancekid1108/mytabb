@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import {getOpenedTabsList} from './chromeapi/chromeapi.js'
+import {getWindowsInfo} from './chromeapi/chromeapi.js'
 import RightSidebar from "./ components/RightSidebar/RightSidebar.jsx";
 import LeftSidebar from "./ components/LeftSidebar/LeftSidebar.jsx";
 import Header from "./ components/Header/Header.jsx";
@@ -83,21 +83,39 @@ function App() {
 
 	// 1. 탭 목록 가져오기 (마운트 시 실행)
 	useEffect(() => {
-		// 실제 Chrome 확장프로그램 환경인지 확인
-		if (typeof chrome !== 'undefined' && chrome.tabs) {
-			chrome.tabs.query({ currentWindow: true }, (tabs) => {
-				// '새 탭' 페이지(자기 자신)는 목록에서 제외하면 더 깔끔함
-				const filtered = tabs.filter(t => t.url !== 'chrome://newtab/');
-				setOpenTabs(filtered);
-			});
-		} else {
-			// 개발 환경(localhost)용 더미 데이터
-			setOpenTabs([
-				{ id: 901, title: 'YouTube - React Tutorial', url: 'https://youtube.com', favIconUrl: '' },
-				{ id: 902, title: 'OpenAI ChatGPT', url: 'https://openai.com', favIconUrl: '' },
-				{ id: 903, title: 'Naver News', url: 'https://news.naver.com', favIconUrl: '' },
-			]);
-		}
+
+		// 1. 탭 목록 가져오기 함수 정의
+		const fetchTabs = async () => {
+			if (typeof chrome !== 'undefined' && chrome.windows) {
+				const windows = await getWindowsInfo();
+
+				// 모든 윈도우의 탭들을 하나의 배열로 합치기
+				const allTabs = windows.flatMap(window => window.tabs || []);
+
+				
+				setOpenTabs(allTabs);
+			} else {
+				// 개발 환경(브라우저)용 더미 데이터
+				setOpenTabs([
+					{ id: 1, title: 'Google', url: 'https://google.com', favIconUrl: '' },
+					{ id: 2, title: 'GitHub', url: 'https://github.com', favIconUrl: '' }
+				]);
+			}
+		};
+
+		fetchTabs()
+
+
+		// 실제 Chrome 확장프로그램 환경체크
+
+		// if (typeof chrome !== 'undefined' && chrome.tabs) {
+		// 	chrome.tabs.query({ currentWindow: true }, (tabs) => {
+		// 		// '새 탭' 페이지(자기 자신)는 목록에서 제외하면 더 깔끔함
+		// 		const filtered = tabs.filter(t => t.url !== 'chrome://newtab/');
+		// 		setOpenTabs(filtered);
+		// 	});
+		// }
+
 	}, []);
 
 
@@ -142,7 +160,7 @@ function App() {
 				</main>
 
 				<div>
-					{/* 3. 오른쪽 사이드바 (고정) - 추가됨! */}
+					 {/*3. 오른쪽 사이드바 (고정) - 추가됨!*/}
 					<RightSidebar
 						openTabs={openTabs}
 						onCloseTab={handleCloseTab}
