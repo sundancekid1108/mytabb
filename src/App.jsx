@@ -92,8 +92,15 @@ function App() {
 				// 모든 윈도우의 탭들을 하나의 배열로 합치기
 				const allTabs = windows.flatMap(window => window.tabs || []);
 
-				
-				setOpenTabs(allTabs);
+
+				// '새 탭'이나 익스텐션 페이지 등 제외하고 싶다면 필터링 가능
+				const filteredTabs = allTabs.filter(tab =>
+					tab.url && !tab.url.startsWith('chrome://newtab')
+				);
+
+				setOpenTabs(filteredTabs);
+
+
 			} else {
 				// 개발 환경(브라우저)용 더미 데이터
 				setOpenTabs([
@@ -106,15 +113,6 @@ function App() {
 		fetchTabs()
 
 
-		// 실제 Chrome 확장프로그램 환경체크
-
-		// if (typeof chrome !== 'undefined' && chrome.tabs) {
-		// 	chrome.tabs.query({ currentWindow: true }, (tabs) => {
-		// 		// '새 탭' 페이지(자기 자신)는 목록에서 제외하면 더 깔끔함
-		// 		const filtered = tabs.filter(t => t.url !== 'chrome://newtab/');
-		// 		setOpenTabs(filtered);
-		// 	});
-		// }
 
 	}, []);
 
@@ -131,11 +129,15 @@ function App() {
 	};
 
 	// 3. 탭 이동 핸들러
-	const handleSwitchTab = (tabId) => {
+	const handleSwitchTab = async (tabId, windowId) => {
 		if (typeof chrome !== 'undefined' && chrome.tabs) {
-			chrome.tabs.update(tabId, { active: true });
-		} else {
-			console.log(`Switch to tab ID: ${tabId}`);
+			try {
+			// 해당 탭이 속한 윈도우를 포커스, 해당 탭 활성화
+				await chrome.windows.update(windowId, { focused: true });
+				await chrome.tabs.update(tabId, { active: true });
+			} catch (error) {
+				console.error("탭 전환 중 오류 발생:", error);
+			}
 		}
 	};
 
@@ -145,7 +147,7 @@ function App() {
 
 			<div className="flex h-screen w-screen bg-gray-50 text-gray-800 font-sans overflow-hidden overscroll-none">
 
-				{/* 1. 왼쪽 사이드바 (고정) */}
+
 				<LeftSidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
 				<main className="flex-1 flex flex-col min-w-0 border-r border-gray-200 transition-all duration-300 h-full">
 					<Header
@@ -160,7 +162,7 @@ function App() {
 				</main>
 
 				<div>
-					 {/*3. 오른쪽 사이드바 (고정) - 추가됨!*/}
+
 					<RightSidebar
 						openTabs={openTabs}
 						onCloseTab={handleCloseTab}

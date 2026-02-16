@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-
+import { DocumentIcon } from '@heroicons/react/24/outline';
 
 const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
     // 1. 탭 목록을 windowId 기준으로 그룹화 (Memoization으로 성능 최적화)
@@ -20,6 +20,8 @@ const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
     const windowIds = Object.keys(tabsByWindow);
 
     return (
+
+
         <aside className="w-80 bg-white border-l border-gray-200 flex flex-col flex-shrink-0 h-full">
             {/* 헤더 영역 */}
             <div className="p-5 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
@@ -49,12 +51,28 @@ const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
                                 onClick={() => onSwitchTab(tab.id, tab.windowId)} // 필요 시 windowId도 전달
                                 className="group flex items-center p-3 mb-1 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors relative"
                             >
+
+
                                 {/* 파비콘 (주석 해제 시 사용 가능) */}
-                         {/*     <img*/}
-                         {/*   src={tab.favIconUrl || `https://www.google.com/s2/favicons?domain=${new URL(tab.url).hostname}&sz=32`}*/}
-                         {/*alt=""*/}
-                         {/*       className="w-4 h-4 mr-3 flex-shrink-0 rounded-sm"*/}
-                         {/*   onError={(e) => {e.target.style.display='none'}}/>*/}
+                                <div className="w-4 h-4 mr-3 flex-shrink-0 flex items-center justify-center">
+                                    {tab.favIconUrl ? (
+                                        <img
+                                            src={tab.favIconUrl}
+                                            alt=""
+                                            className="w-4 h-4 rounded-sm"
+                                            onError={(e) => {
+                                                // 이미지 로드 실패 시 아이콘 숨기거나 기본 아이콘 처리
+                                                e.target.style.display = 'none';
+                                            }}
+                                        />
+                                    ) : (
+                                        /* favIconUrl이 없을 때 보여줄 기본 SVG 아이콘 */
+                                        <DocumentIcon className="w-4 h-4 text-gray-400"/>
+
+                                    )}
+                                </div>
+
+
 
                                 {/* 탭 제목 */}
                                 <div className="flex-1 min-w-0 mr-6"> {/* 삭제 버튼 공간 확보를 위해 mr-6 */}
