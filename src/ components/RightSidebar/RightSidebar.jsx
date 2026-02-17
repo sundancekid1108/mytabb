@@ -14,7 +14,7 @@ const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
         return groups;
     }, [openTabs]);
 
-    console.log("tabsByWindow", tabsByWindow);
+    // console.log("tabsByWindow", tabsByWindow);
 
     // 윈도우 ID 목록 (키값) 가져오기
     const windowIds = Object.keys(tabsByWindow);
@@ -24,12 +24,9 @@ const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
 
         <aside className="w-80 bg-white border-l border-gray-200 flex flex-col flex-shrink-0 h-full">
             {/* 헤더 영역 */}
-            <div className="p-5 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
+            <div className=" h-16 p-5 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
                 <h3 className="font-bold text-gray-700">Open Tabs</h3>
-                <span className="bg-blue-100 text-blue-600 text-xs font-bold px-2 py-1 rounded-full">
-                    {/* 전체 탭 개수 / 윈도우 개수 표시 */}
-                    {openTabs.length} tabs / {windowIds.length} wins
-                </span>
+
             </div>
 
             {/* 탭 리스트 영역 (스크롤 가능) */}
@@ -67,7 +64,8 @@ const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
                                         />
                                     ) : (
                                         /* favIconUrl이 없을 때 보여줄 기본 SVG 아이콘 */
-                                        <DocumentIcon className="w-4 h-4 text-gray-400"/>
+                                        // <DocumentIcon className="w-4 h-4 text-gray-400"/>
+                                        <div></div>
 
                                     )}
                                 </div>
