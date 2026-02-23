@@ -4,11 +4,14 @@ import RightSidebar from "./ components/RightSidebar/RightSidebar.jsx";
 import LeftSidebar from "./ components/LeftSidebar/LeftSidebar.jsx";
 import Header from "./ components/Header/Header.jsx";
 import CollectionGroup from './ components/CollectionGroup/CollectionGroup.jsx'
+import useTabStore from './utils/zustand/store.js'
+import {openTabDataSample} from './sample/testdata.js'
 
 const  App = () => {
     // 상태 관리: 사이드바 메뉴 활성화
     const [activeMenu, setActiveMenu] = useState('Collections');
-    const [openTabs, setOpenTabs] = useState([]); // 현재 열린 탭 목록 상태
+    const [openTabs, setOpenTabs] = useState([]);
+    const [selectedTabs, setSelectedTabs] = useState([]);
 
     // 더미 데이터 (컬렉션)
     const [collections, setCollections] = useState([
@@ -81,29 +84,28 @@ const  App = () => {
         },
     ]);
 
+
     // 1. 탭 목록 가져오기 함수 정의
-    const fetchTabs = useCallback(async () => {
-        if (typeof chrome !== 'undefined' && chrome.windows) {
-            try {
-                const windows = await getWindowsInfo();
-                const allTabs = windows.flatMap(window => window.tabs || []);
-                const filteredTabs = allTabs.filter(tab =>
-                    tab.url && !tab.url.startsWith('chrome://newtab')
-                );
-
-
-                setOpenTabs([...filteredTabs]);
-            } catch (error) {
-                console.error("탭 정보를 가져오는데 실패했습니다.", error);
-            }
-        } else {
-            // 개발 모드 더미 데이터
-            setOpenTabs([
-                { id: 1, title: 'Google', url: 'https://google.com', windowId: 1 },
-                { id: 2, title: 'GitHub', url: 'https://github.com', windowId: 1 }
-            ]);
-        }
-    }, []);
+    // const fetchTabs = useCallback(async () => {
+    //     if (typeof chrome !== 'undefined' && chrome.windows) {
+    //         try {
+    //             const windows = await getWindowsInfo();
+    //             const allTabs = windows.flatMap(window => window.tabs || []);
+    //             const filteredTabs = allTabs.filter(tab =>
+    //                 tab.url && !tab.url.startsWith('chrome://newtab')
+    //             );
+    //             console.log(filteredTabs);
+    //
+    //
+    //             setOpenTabs([...filteredTabs]);
+    //         } catch (error) {
+    //             console.error("탭 정보를 가져오는데 실패했습니다.", error);
+    //         }
+    //     } else {
+    //         // 개발 모드 더미 데이터
+    //         setOpenTabs(openTabDataSample);
+    //     }
+    // }, []);
 
 
 
@@ -112,11 +114,14 @@ const  App = () => {
         // 1. 탭 목록 가져오기 (마운트 시 실행)
         useEffect(() => {
 
-            const initialize = async () => {
-                await fetchTabs();
-            };
+            // const initialize = async () => {
+            //     await fetchTabs();
+            // };
+            //
+            // initialize();
 
-            initialize();
+            const { fetchTabs } = useTabStore.getState();
+            fetchTabs()
 
 
             if (typeof chrome !== 'undefined' && chrome.tabs) {
@@ -165,7 +170,17 @@ const  App = () => {
                 };
             }
 
+            // setOpenTabs(openTabDataSample);
+
         }, []);
+
+        const handleToggleSelectedTab = (tabId) => {
+            setSelectedTabs((prev) =>
+                prev.includes(tabId)
+                    ? prev.filter((id) => id !== tabId) // 이미 있으면 제거
+                    : [...prev, tabId]                  // 없으면 추가
+            );
+        }
 
 
         // 2. 탭 닫기 핸들러
@@ -193,6 +208,8 @@ const  App = () => {
         };
 
 
+
+
         return (
 
 
@@ -217,6 +234,8 @@ const  App = () => {
 
                     <RightSidebar
                         openTabs={openTabs}
+                        selectedTabs={selectedTabs}
+                        onToggleSelectedTab={handleToggleSelectedTab}
                         onCloseTab={handleCloseTab}
                         onSwitchTab={handleSwitchTab}
                     />

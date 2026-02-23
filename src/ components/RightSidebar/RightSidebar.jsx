@@ -1,20 +1,24 @@
 import { useState, useEffect, useMemo } from 'react';
-import { DocumentIcon } from '@heroicons/react/24/outline';
+import useTabStore from "../../utils/zustand/store.js";
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
-const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
-    // 1. 탭 목록을 windowId 기준으로 그룹화 (Memoization으로 성능 최적화)
+const RightSidebar = ()  => {
+
+    // 필요한 상태와 함수만 선택해서 가져옴
+    const { openTabs, selectedTabs, toggleSelectTab, closeTab } = useTabStore();
+    console.log("openTabs", openTabs);
+
+    // 그룹화 로직 (openTabs가 바뀔 때만 재계산)
     const tabsByWindow = useMemo(() => {
         const groups = {};
         openTabs.forEach((tab) => {
-            if (!groups[tab.windowId]) {
-                groups[tab.windowId] = [];
-            }
+            if (!groups[tab.windowId]) groups[tab.windowId] = [];
             groups[tab.windowId].push(tab);
         });
         return groups;
     }, [openTabs]);
 
-    // console.log("tabsByWindow", tabsByWindow);
+
 
     // 윈도우 ID 목록 (키값) 가져오기
     const windowIds = Object.keys(tabsByWindow);
@@ -42,58 +46,52 @@ const RightSidebar = ({ openTabs, onCloseTab, onSwitchTab })  => {
                         </div>
 
                         {/* 해당 윈도우에 속한 탭들 순회 */}
-                        {tabsByWindow[windowId].map((tab) => (
-                            <div
-                                key={tab.id}
-                                onClick={() => onSwitchTab(tab.id, tab.windowId)} // 필요 시 windowId도 전달
-                                className="group flex items-center p-3 mb-1 rounded-lg hover:bg-blue-50 cursor-pointer transition-colors relative"
-                            >
+                        {tabsByWindow[windowId].map((tab) => {
+                            const isSelected = selectedTabs.includes(tab.id);
 
-
-                                {/* 파비콘 (주석 해제 시 사용 가능) */}
-                                <div className="w-4 h-4 mr-3 flex-shrink-0 flex items-center justify-center">
-                                    {tab.favIconUrl ? (
-                                        <img
-                                            src={tab.favIconUrl}
-                                            alt=""
-                                            className="w-4 h-4 rounded-sm"
-                                            onError={(e) => {
-                                                // 이미지 로드 실패 시 아이콘 숨기거나 기본 아이콘 처리
-                                                e.target.style.display = 'none';
-                                            }}
-                                        />
-                                    ) : (
-                                        /* favIconUrl이 없을 때 보여줄 기본 SVG 아이콘 */
-                                        // <DocumentIcon className="w-4 h-4 text-gray-400"/>
-                                        <div></div>
-
-                                    )}
-                                </div>
-
-
-
-                                {/* 탭 제목 */}
-                                <div className="flex-1 min-w-0 mr-6"> {/* 삭제 버튼 공간 확보를 위해 mr-6 */}
-                                    <p className="text-sm text-gray-700 truncate font-medium leading-tight">
-                                        {tab.title}
-                                    </p>
-                                    {/* URL (선택사항) */}
-                                    {/* <p className="text-xs text-gray-400 truncate mt-0.5">{new URL(tab.url).hostname}</p> */}
-                                </div>
-
-                                {/* 닫기 버튼 */}
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onCloseTab(tab.id);
-                                    }}
-                                    className="absolute right-2 opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all"
-                                    title="Close Tab"
+                            return (
+                                <div
+                                    key={tab.id}
+                                    onClick={() => onSwitchTab(tab.id, tab.windowId)}
+                                    className={`group flex items-center p-3 mb-1 rounded-lg transition-colors relative cursor-pointer
+                                        ${isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
                                 >
-                                    ✕
-                                </button>
-                            </div>
-                        ))}
+                                    {/* 파비콘 및 체크박스 영역 */}
+                                    <div className="w-5 h-5 mr-3 flex-shrink-0 flex items-center justify-center relative">
+                                        {/* 선택되지 않았을 때만 파비콘 표시 (호버 시 숨김) */}
+                                        <div className={`${isSelected ? 'hidden' : 'group-hover:hidden'} flex items-center justify-center`}>
+                                            {tab.favIconUrl ? (
+                                                <img src={tab.favIconUrl} alt="" className="w-4 h-4 rounded-sm" />
+                                            ) : (
+                                                <div className="w-4 h-4 bg-gray-200 rounded-sm" />
+                                            )}
+                                        </div>
+
+                                        {/* 체크박스: 호버 중이거나 이미 선택된 경우 표시 */}
+                                        <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => toggleSelectTab(tab.id)}
+                                            onClick={(e) => e.stopPropagation()} // 탭 이동 방지
+                                            className={`${isSelected ? 'block' : 'hidden group-hover:block'} w-4 h-4 cursor-pointer accent-blue-600`}
+                                        />
+                                    </div>
+
+                                    <div className="flex-1 min-w-0 mr-6">
+                                        <p className={`text-sm truncate font-medium leading-tight ${isSelected ? 'text-blue-700' : 'text-gray-700'}`}>
+                                            {tab.title}
+                                        </p>
+                                    </div>
+
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onCloseTab(tab.id); }}
+                                        className="absolute right-2 opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            );
+                        })}
                     </div>
                 ))}
 
