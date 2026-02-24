@@ -84,10 +84,14 @@ const RightSidebar = ()  => {
                                     </div>
 
                                     <button
-                                        onClick={(e) => { e.stopPropagation(); onCloseTab(tab.id); }}
-                                        className="absolute right-2 opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            closeTab(tab.id);
+                                        }}
+                                        className="absolute right-2 opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all"
+                                        title="Close Tab"
                                     >
-                                        ✕
+                                        <XMarkIcon className="w-5 h-5" />
                                     </button>
                                 </div>
                             );
