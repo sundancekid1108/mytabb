@@ -6,6 +6,7 @@ import { getWindowsInfo} from '../../chromeapi/chromeapi.js'
 const useTabStore = create((set, get) => ({
     openTabs: [],
     selectedTabs: [],
+    isModalOpen: false,
 
     fetchTabs: async () => {
         if (typeof chrome !== 'undefined' && chrome.windows) {
@@ -18,12 +19,29 @@ const useTabStore = create((set, get) => ({
         }
     },
 
-    toggleSelectTab: (tabId) => {
-        const  selectedTabs  = get().selectedTabs;
-        const nextSelected = selectedTabs.includes(tabId)
-            ? selectedTabs.filter(id => id !== tabId)
-            : [...selectedTabs, tabId];
-        set({ selectedTabs: nextSelected });
+    onSwitchTab: async (tabId, windowId) => {
+        if (typeof chrome !== 'undefined' && chrome.tabs) {
+            await chrome.windows.update(windowId, { focused: true });
+            await chrome.tabs.update(tabId, { active: true });
+        }
+    },
+
+    toggleSelectTab: (tab) => {
+
+        set((state) => {
+
+            const isSelected = state.selectedTabs.some(t => t.id === tab.id);
+
+            const nextSelected = isSelected
+                ? state.selectedTabs.filter(t => t.id !== tab.id)
+                : [...state.selectedTabs, tab];
+
+            return {
+                selectedTabs: nextSelected,
+                isModalOpen: nextSelected.length > 0
+            };
+
+        });
     },
 
     clearSelectedTabs: () => set({selectedTabs: []}),
@@ -31,12 +49,14 @@ const useTabStore = create((set, get) => ({
     closeTab: (tabId) => {
         if (typeof chrome !== 'undefined' && chrome.tabs) {
             chrome.tabs.remove(tabId);
-            // 상태 업데이트는 chrome.tabs.onRemoved 리스너가 호출하는 fetchTabs에서 처리됨
+   
             set((state) => ({
                 selectedTabs: state.selectedTabs.filter(id => id !== tabId)
             }));
         }
     },
+
+    setModalOpen: (isOpen) => set({ isModalOpen: isOpen }),
 
 
 

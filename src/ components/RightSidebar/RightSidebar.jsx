@@ -5,8 +5,9 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 const RightSidebar = ()  => {
 
     // 필요한 상태와 함수만 선택해서 가져옴
-    const { openTabs, selectedTabs, toggleSelectTab, closeTab } = useTabStore();
+    const { openTabs, selectedTabs, toggleSelectTab, closeTab, onSwitchTab } = useTabStore();
     console.log("openTabs", openTabs);
+    console.log("selectedTabs", selectedTabs); // 체크할 때마다 이 배열이 변해야 합니다.
 
     // 그룹화 로직 (openTabs가 바뀔 때만 재계산)
     const tabsByWindow = useMemo(() => {
@@ -17,7 +18,6 @@ const RightSidebar = ()  => {
         });
         return groups;
     }, [openTabs]);
-
 
 
     // 윈도우 ID 목록 (키값) 가져오기
@@ -47,7 +47,7 @@ const RightSidebar = ()  => {
 
                         {/* 해당 윈도우에 속한 탭들 순회 */}
                         {tabsByWindow[windowId].map((tab) => {
-                            const isSelected = selectedTabs.includes(tab.id);
+                            const isSelected = selectedTabs.some((selected) => selected.id === tab.id);
 
                             return (
                                 <div
@@ -57,7 +57,9 @@ const RightSidebar = ()  => {
                                         ${isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
                                 >
                                     {/* 파비콘 및 체크박스 영역 */}
-                                    <div className="w-5 h-5 mr-3 flex-shrink-0 flex items-center justify-center relative">
+                                    <div className="w-5 h-5 mr-3 flex-shrink-0 flex items-center justify-center relative"
+                                         onClick={(e) => e.stopPropagation()} // 여기서 미리 막아버림
+                                    >
                                         {/* 선택되지 않았을 때만 파비콘 표시 (호버 시 숨김) */}
                                         <div className={`${isSelected ? 'hidden' : 'group-hover:hidden'} flex items-center justify-center`}>
                                             {tab.favIconUrl ? (
@@ -71,8 +73,11 @@ const RightSidebar = ()  => {
                                         <input
                                             type="checkbox"
                                             checked={isSelected}
-                                            onChange={() => toggleSelectTab(tab.id)}
-                                            onClick={(e) => e.stopPropagation()} // 탭 이동 방지
+                                            onChange={() => {
+
+                                                toggleSelectTab(tab);
+                                            }}
+
                                             className={`${isSelected ? 'block' : 'hidden group-hover:block'} w-4 h-4 cursor-pointer accent-blue-600`}
                                         />
                                     </div>
