@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/* 브라우저 전체 스크롤바 디자인 통일 (가로 & 세로) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+/* 스크롤바 핸들 (움직이는 부분) */
+::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4b5563; /* 마우스 올렸을 때 살짝 밝게 */
+}
+
+/* 스크롤바 트랙 (바탕 길) */
+::-webkit-scrollbar-track {
+    background: #1e1e26; /* 메인 배경색과 일치시켜 일체감 부여 */
+}
+
+/* 시스템 레벨 배경 고정 */
+html, body {
+    background-color: #1e1e26;
+    overscroll-behavior: none; /* 상하좌우 모든 바운스 방지 */
+    margin: 0;
+    padding: 0;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}

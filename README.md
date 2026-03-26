@@ -1,2 +1,3 @@
 # MYTABB
-Chrome Tab management extension
+- 크롬 즐겨찾기 관리 확장프로그램
+- 

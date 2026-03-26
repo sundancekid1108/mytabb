@@ -1,0 +1,36 @@
+{
+    "manifest_version": 3,
+    "name": "mytabb",
+    "version": "1.0.0",
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "chrome_url_overrides": {
+        "newtab": "index.html"
+    },
+    "permissions": [
+        "topSites",
+        "bookmarks",
+        "storage",
+        "tabs",
+        "contextMenus"
+    ],
+    "background": {
+        "service_worker": "src/background.js",
+        "type": "module"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "src/content.js"
+            ]
+        }
+    ]
+
+
+
+
+}
