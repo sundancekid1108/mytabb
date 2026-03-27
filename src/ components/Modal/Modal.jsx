@@ -1,6 +1,7 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import useTabStore from "../../utils/zustand/tabstore.js";
+import useModalStore from "../../utils/zustand/modalstore.js";
 import {
 	XMarkIcon,
 	FolderPlusIcon,
@@ -9,18 +10,27 @@ import {
 } from "@heroicons/react/24/outline";
 
 const Modal = () => {
-	const { selectedTabs, isModalOpen, setModalOpen } = useTabStore();
-
-	const closeModal = () => {
-		setModalOpen(false);
-	};
-
+	const selectedTabs = useTabStore((state) => state.selectedTabs);
+	const { isModalOpen, openModal, closeModal } = useModalStore();
+	
 	const handleAddToExistingCollection = () => {
 		console.log("기존 컬렉션 추가 로직 실행");
+		console.log(selectedTabs)
 	};
 	const handleCreateCollection = () => {
 		console.log("새 컬렉션 생성 로직 실행");
+		console.log(selectedTabs)
 	};
+
+	useEffect(() => {
+		if (selectedTabs.length > 0) {
+			openModal(); // selectedTabs 1개 이상이면 모달 노출
+		} else {
+			closeModal(); // selectedTabs 0이면 모달 x
+		}
+	}, [selectedTabs]);
+
+
 
 	return (
 		<Transition show={isModalOpen} as={Fragment}>

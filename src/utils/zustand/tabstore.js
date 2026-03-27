@@ -57,14 +57,13 @@ const useTabStore = create((set, get) => ({
                     openTabs: nextOpenTabs,
                     selectedTabs: nextSelected,
 
-                    isModalOpen: nextSelected.length > 0
+
                 };
             });
         }
     },
 
-    clearSelectedTabs: () => set({ selectedTabs: [], isModalOpen: false }),
-    setModalOpen: (isOpen) => set({ isModalOpen: isOpen }),     
+    clearSelectedTabs: () => set({ selectedTabs: [], }),
 
 
 
